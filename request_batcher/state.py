@@ -7,22 +7,22 @@ from exceptions import BadArgumentError
 
 
 @dataclass(frozen=True)
-class OpenData:
+class DataToLog:
     tracking_id: int
     timestamp: datetime.datetime
 
 
-class OpenState:
+class State:
     """Note, there's nothing guaranteeing the order of _data, but it's correct enough."""
 
     def __init__(self):
-        self._data: List[OpenData] = []
+        self._data: List[DataToLog] = []
         self._lock = asyncio.Lock()
 
-    def add(self, data: OpenData) -> None:
+    def add(self, data: DataToLog) -> None:
         self._data.append(data)
 
-    def get_records_to_pop(self, number_of_records: Optional[int]=None) -> Tuple[Iterable[OpenData], int]:
+    def get_records_to_pop(self, number_of_records: Optional[int]=None) -> Tuple[Iterable[DataToLog], int]:
         if number_of_records is None:
             number_of_records = len(self._data)
 
@@ -41,6 +41,10 @@ class OpenState:
         # leave ourselves in a bad state
         async with self._lock:
             self._data = self._data[number_to_pop:]
+
+    async def flush_all(self):
+        async with self._lock:
+            self._data = []
 
     def __len__(self):
         return len(self._data)

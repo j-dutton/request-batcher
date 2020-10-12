@@ -12,17 +12,22 @@ STATIC_FILE_LOC = 'static/pixel.png'
 # Inbound requests
 TRACKING_ID_QUERY_PARAM = os.getenv('TRACKING_ID_QUERY_PARAM', 'tracking_id')
 OPEN_TRACKING_URL = os.getenv('OPEN_TRACKING_URL', '/open_tracking/')
+NEXT_URL_QUERY_PARAM = os.getenv('NEXT_URL_QUERY_PARAM', 'next')
+CLICK_TRACKING_URL = os.getenv('CLICK_TRACKING_URL', '/click_tracking/')
 
 # Outbound requests
 OUTBOUND_REQUEST_USER_NAME = os.getenv('OUTBOUND_REQUEST_USER_NAME', 'user')
 OUTBOUND_REQUEST_PASSWORD = os.getenv('OUTBOUND_REQUEST_PASSWORD', 'password')
 EXPECTED_POST_STATUS = int(os.getenv('EXPECTED_POST_STATUS', 201))
 OPEN_DATA_POST_URL = os.getenv('OPEN_DATA_POST_URL', 'http://localhost:8080/open_batch/')
+CLICK_DATA_POST_URL = os.getenv('CLICK_DATA_POST_URL', 'http://localhost:8080/click_batch/')
 
 # Memory-related
 MAX_OPENS_ALLOWED_IN_STATE = int(os.getenv('MAX_OPENS_ALLOWED_IN_STATE', 1000000))
+MAX_CLICKS_ALLOWED_IN_STATE = int(os.getenv('MAX_CLICKS_ALLOWED_IN_STATE', 1000000))
 MAX_BATCH_TO_FLUSH = int(os.getenv('MAX_BATCH_TO_FLUSH', 10000))
 
 # Task intervals
 MONITOR_INTERVAL_SECONDS = int(os.getenv('MONITOR_INTERVAL_SECONDS', 120))
 OPEN_FLUSH_INTERVAL_SECONDS = int(os.getenv('OPEN_FLUSH_INTERVAL_SECONDS', 30))
+CLICK_FLUSH_INTERVAL_SECONDS = int(os.getenv('CLICK_FLUSH_INTERVAL_SECONDS', 30))

@@ -1,4 +1,5 @@
-from constants import MONITOR_INTERVAL_SECONDS, MAX_OPENS_ALLOWED_IN_STATE
+from clicks import click_state
+from constants import MONITOR_INTERVAL_SECONDS, MAX_OPENS_ALLOWED_IN_STATE, MAX_CLICKS_ALLOWED_IN_STATE
 from logger import LOG
 from opens import open_state
 from utils import repeat
@@ -8,12 +9,27 @@ from utils import repeat
 async def monitor():
     logger = LOG.getChild('monitor')
     logger.info('Running Monitor')
-    awaiting_batch = len(open_state)
+    awaiting_open_batch = len(open_state)
+    awaiting_click_batch = len(click_state)
 
-    if awaiting_batch > 0:
-        logger.info('Batch of OpenData currently awaiting processing', extra={'length': awaiting_batch})
+    # Opens
+    if awaiting_open_batch > 0:
+        logger.info('Batch of OpenData currently awaiting processing', extra={'length': awaiting_open_batch})
 
-    if awaiting_batch > MAX_OPENS_ALLOWED_IN_STATE:
-        logger.error(f'Too many OpenData stuck in memory. Dropping all of them.', extra={'length': awaiting_batch})
-        _, number_to_drop = open_state.get_records_to_pop(number_of_records=awaiting_batch)
-        await open_state.pop_records(number_to_pop=number_to_drop)
+    if awaiting_open_batch > MAX_OPENS_ALLOWED_IN_STATE:
+        logger.error(
+            'Too many OpenData stuck in memory. Dropping all of them.',
+            extra={'length': awaiting_open_batch}
+        )
+        await open_state.flush_all()
+
+    # Clicks
+    if awaiting_click_batch > 0:
+        logger.info('Batch of ClickData currently awaiting processing', extra={'length': awaiting_click_batch})
+
+    if awaiting_click_batch > MAX_CLICKS_ALLOWED_IN_STATE:
+        logger.error(
+            'Too many ClickData stuck in memory. Dropping all of them.',
+            extra={'length': awaiting_click_batch}
+        )
+        await click_state.flush_all()

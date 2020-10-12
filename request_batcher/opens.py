@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+from dataclasses import dataclass
 from functools import lru_cache
 
 from aiohttp import web
@@ -13,13 +14,19 @@ from constants import (
 )
 from logger import LOG
 from exceptions import RequestError
-from state import OpenState, OpenData
+from state import State, DataToLog
 from utils import repeat, post_request
 
-open_state = OpenState()
+open_state = State()
+
+
+@dataclass(frozen=True)
+class OpenData(DataToLog):
+    pass
 
 
 async def handle_open(tracking_id: int, timestamp: datetime.datetime):
+    """Function to add OpenData to state asynchronously"""
     open_state.add(
         OpenData(
             tracking_id=tracking_id,
@@ -62,7 +69,7 @@ async def flush_opens():
     """
     Code called when flushing the opens currently stored in state.
 
-    This will fetch data from the OpenState (without mutating it), format, attempt to POST
+    This will fetch data from the State (without mutating it), format, attempt to POST
     to the URL, and remove it on success.
     """
     to_flush, number_being_flushed = open_state.get_records_to_pop(number_of_records=MAX_BATCH_TO_FLUSH)
