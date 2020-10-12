@@ -37,6 +37,8 @@ class OpenState:
                 f'({number_to_pop} > {current_records})'
             )
 
+        # Make sure we lock the object so that we don't attempt to pop twice at once and
+        # leave ourselves in a bad state
         async with self._lock:
             self._data = self._data[number_to_pop:]
 
